@@ -6,6 +6,6 @@ from .serializers import RegisterSerializer
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()    
-    permission = (AllowAny)
+    permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
