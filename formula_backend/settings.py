@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv()
 
@@ -47,7 +48,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'authentication'
+    'authentication',
+    'forms'
 ]
 
 MIDDLEWARE = [
@@ -143,3 +145,17 @@ AUTHENTICATION_BACKENDS = [
     "authentication.backends.EmailBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
+    
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
