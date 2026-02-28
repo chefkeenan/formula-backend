@@ -1,9 +1,13 @@
 from rest_framework import viewsets, permissions
 from forms.models import Form
-from forms.serializers import FormSerializer
+from forms.serializers import FormSerializer, FormDetailSerializer
 
 class FormViewSet(viewsets.ModelViewSet):
-    serializer_class = FormSerializer
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'update', 'partial_update']:
+            return FormDetailSerializer
+        
+        return FormSerializer
 
     def get_permissions(self):
         if self.action == "retrieve":

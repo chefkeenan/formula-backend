@@ -12,3 +12,35 @@ class Form(models.Model):
 
     def __str__(self):
         return self.title
+
+class Question(models.Model):
+    QUESTION_TYPES = [
+        ("text", "Short Answer"),
+        ("textarea", "Paragraph"),
+        ("radio", "Multiple Choice"),
+        ("checkbox", "Checkboxes"),
+        ("dropdown", "Dropdown"),
+    ]
+
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="questions")
+    type = models.CharField(max_length=20, choices=QUESTION_TYPES, default="text")
+    question_text = models.CharField(max_length=500, blank=True)
+    required = models.BooleanField(default=False)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.form.title} - {self.question_text}"
+
+class Option(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="options")
+    option_text = models.CharField(max_length=255)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.option_text
