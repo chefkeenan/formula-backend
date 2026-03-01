@@ -4,10 +4,14 @@ from rest_framework.exceptions import ValidationError
 
 class FormSerializer(serializers.ModelSerializer):
     creator = serializers.ReadOnlyField(source="creator.username")
+    responses_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Form
-        fields = ("id", "title", "description", "creator", "created_at", "updated_at", "is_accepting_responses")
+        fields = ("id", "title", "description", "creator", "created_at", "updated_at", "is_accepting_responses", "responses_count")
+
+    def get_responses_count(self, obj):
+        return obj.submissions.count()
 
 class QuestionSerializer(serializers.ModelSerializer):
     options = serializers.SerializerMethodField()
