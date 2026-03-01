@@ -23,7 +23,7 @@ Make sure you have **Python** and a package manager like **pip** installed on yo
 1.  **Clone the Repository**:
     If you haven't already, clone this repository to your local machine.
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/chefkeenan/formula-backend
     cd formula-backend
     ```
 
