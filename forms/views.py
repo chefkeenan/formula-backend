@@ -2,6 +2,8 @@ from rest_framework import viewsets, permissions, generics, status
 from forms.models import Form, Submission
 from forms.serializers import FormSerializer, FormDetailSerializer, SubmissionSerializer
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import PermissionDenied
 
 class FormViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
@@ -42,3 +44,16 @@ class SubmitResponseView(generics.CreateAPIView):
             return Response({"error": "Form is closed and currently not accepting any responses."}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().create(request, *args, **kwargs)
+
+class FormSubmissionsListView(generics.ListAPIView):
+    serializer_class = SubmissionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        form_id = self.kwargs.get('form_id')
+        form = get_object_or_404(Form, id=form_id)
+        
+        if form.creator != self.request.user:
+            raise PermissionDenied("You do not have permission to view these responses.")
+            
+        return Submission.objects.filter(form=form).order_by('-submitted_at')
