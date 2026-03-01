@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from forms.models import Form, Option, Question, Submission, Answer
 from rest_framework.exceptions import ValidationError
+from django.db import transaction
 
 class FormSerializer(serializers.ModelSerializer):
     creator = serializers.ReadOnlyField(source="creator.username")
@@ -35,6 +36,7 @@ class FormDetailSerializer(serializers.ModelSerializer):
     def get_has_submissions(self, obj):
         return obj.submissions.exists()
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get("description", instance.description)
@@ -83,7 +85,7 @@ class FormDetailSerializer(serializers.ModelSerializer):
             questions_to_delete = existing_question_ids - set(incoming_question_ids)
             
             if questions_to_delete and has_submissions:
-                raise ValidationError({"questions": "Can't delete question. Form already has submissions"})
+                raise ValidationError({"questions": "Can't make changes. Form already has submissions"})
                 
             Question.objects.filter(id__in=questions_to_delete).delete()
 
