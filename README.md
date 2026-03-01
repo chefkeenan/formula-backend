@@ -8,9 +8,8 @@ A Backend application for a Form Builder website. This project was developed as 
 * **API Framework**: Django REST Framework (v3.16.1).
 * **Language**: Python.
 * **Database**: PostgreSQL for production and SQLite (`db.sqlite3`) for local development.
-* **Authentication**: JWT (JSON Web Tokens) Authentication using `djangorestframework-simplejwt`.
-* **Cross-Origin Resource Sharing**: `django-cors-headers` for handling API requests from the frontend.
-* **Environment Management**: `python-dotenv` for managing environment variables.
+* **Authentication**: JWT (JSON Web Tokens).
+
 
 ## Run Locally
 
