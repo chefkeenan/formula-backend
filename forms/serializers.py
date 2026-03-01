@@ -22,10 +22,14 @@ class QuestionSerializer(serializers.ModelSerializer):
 class FormDetailSerializer(serializers.ModelSerializer):
     creator = serializers.ReadOnlyField(source="creator.username")
     questions = QuestionSerializer(many=True, read_only=True)
+    has_submissions = serializers.SerializerMethodField()
 
     class Meta:
         model = Form
-        fields = ["id", "title", "description", "creator", "created_at", "updated_at", "questions", "is_accepting_responses"]
+        fields = ["id", "title", "description", "creator", "created_at", "updated_at", "questions", "is_accepting_responses", "has_submissions"]
+
+    def get_has_submissions(self, obj):
+        return obj.submissions.exists()
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -38,14 +42,14 @@ class FormDetailSerializer(serializers.ModelSerializer):
         if questions_data is not None:
             has_submissions = instance.submissions.exists()
 
-            existing_question_ids = [q.id for q in instance.questions.all()]
+            existing_question_ids = {str(q.id) for q in instance.questions.all()}
             incoming_question_ids = []
 
             for index, q_data in enumerate(questions_data):
-                q_id = q_data.get("id")
+                q_id = str(q_data.get("id", ""))
                 
-                if isinstance(q_id, int) or (isinstance(q_id, str) and q_id.isdigit()):
-                    q_instance = Question.objects.get(id=int(q_id), form=instance)
+                if q_id in existing_question_ids:
+                    q_instance = Question.objects.get(id=q_id, form=instance)
                     
                     new_type = q_data.get("type", q_instance.type)
                     
@@ -58,7 +62,7 @@ class FormDetailSerializer(serializers.ModelSerializer):
                     q_instance.order = index
                     q_instance.save()
                     
-                    incoming_question_ids.append(q_instance.id)
+                    incoming_question_ids.append(str(q_instance.id))
                     self._update_options(q_instance, q_data.get("options", []))
                     
                 else:
@@ -69,10 +73,10 @@ class FormDetailSerializer(serializers.ModelSerializer):
                         required=q_data.get("required", False),
                         order=index
                     )
-                    incoming_question_ids.append(new_q.id)
+                    incoming_question_ids.append(str(new_q.id))
                     self._update_options(new_q, q_data.get("options", []))
 
-            questions_to_delete = set(existing_question_ids) - set(incoming_question_ids)
+            questions_to_delete = existing_question_ids - set(incoming_question_ids)
             
             if questions_to_delete and has_submissions:
                 raise ValidationError({"questions": "Can't delete question. Form already has submissions"})
