@@ -45,3 +45,22 @@ Make sure you have **Python** and a package manager like **pip** installed on yo
     ```bash
     python manage.py runserver
     ```
+### API Endpoints
+
+Authentication
+- Register: POST /api/auth/register/
+- Login : POST /api/token/
+- Refresh Token: POST /api/token/refresh/
+
+Forms
+- List All Forms: GET /api/forms/
+- Create Form: POST /api/forms/
+- Form Detail: GET /api/forms/<uuid:id>/
+- Update Form (Full): PUT /api/forms/<uuid:id>/
+- Update Form (Partial): PATCH /api/forms/<uuid:id>/
+- Delete Form: DELETE /api/forms/<uuid:id>/
+
+Submissions
+- Submit Response: POST /api/forms/submissions/
+- View All Submissions: GET /api/forms/<uuid:form_id>/submissions/
+
