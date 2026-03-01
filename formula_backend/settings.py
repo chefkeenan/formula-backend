@@ -34,6 +34,9 @@ DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://formula-backend-production.up.railway.app",
+]
 
 # Application definition
 
